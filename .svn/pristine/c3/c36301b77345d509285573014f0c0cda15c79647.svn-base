@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using WorkflowCore.Exceptions;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Sample_TOA.Models;
+using WorkflowCore.Sample_TOA.Rules;
+
+namespace WorkflowCore.Extention.Primitives.TOA
+{
+    public class JobStepBody : UBStepBody
+    {
+        public UBJob Job { get; set; }
+        public override ExecutionResult Run(IStepExecutionContext context)
+        {
+            this.InitUBContext(context);
+
+            Job = (UBJob)context.ExecutionPointer.ContextItem;
+            this.ProcInstContext.SetValue("Job", Job);
+
+            DestinationRule destinationRule = new DestinationRule();
+            destinationRule.Run(this.ProcInstContext);
+
+            List<UBDestination> destinations = (List<UBDestination>)this.ProcInstContext.GetValue("Destinations");
+
+            var values = destinations.Cast<object>();
+            if (context.PersistenceData == null)
+            {
+                Console.WriteLine("JobStepBody:" + Job.JobId + " start...");
+                return ExecutionResult.Branch(new List<object>(values), new IteratorPersistenceData() { ChildrenActive = true });
+            }
+
+            if (context.PersistenceData is IteratorPersistenceData persistenceData && persistenceData?.ChildrenActive == true)
+            {
+                if (context.Workflow.IsBranchComplete(context.ExecutionPointer.Id))
+                {
+                    Console.WriteLine("JobStepBody:" + Job.JobId + " end...");
+                    //找到所有的子exepointer的outcome 与job的action的outcome的结果
+
+                    return ExecutionResult.Outcome("同意");
+                }
+
+                return ExecutionResult.Persist(persistenceData);
+            }
+
+            return ExecutionResult.Next();
+        }
+    }
+}

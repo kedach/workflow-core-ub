@@ -1,0 +1,217 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.UBWF.Models;
+using WorkflowCore.UBWF.Models.TOA;
+
+namespace WorkflowCore.UBWF.SimProvider
+{
+    public class DestinationStack
+    {
+
+        private static Stack<List<UBDestination>> uBJobs = new Stack<List<UBDestination>>();
+        static DestinationStack()
+        {
+            uBJobs.Push(new List<UBDestination>() {
+                new UBDestination()
+                {
+                    UserId = "U1.1",
+                    UserName = "U1.1Name",
+                    UserProfile = "U1.1Pf"
+                },
+                new UBDestination()
+                {
+                    UserId = "U1.2",
+                    UserName = "U1.2Name",
+                    UserProfile = "U1.2Pf"
+                }
+            } );
+            uBJobs.Push(new List<UBDestination>() {
+                new UBDestination()
+                {
+                    UserId = "U2.1",
+                    UserName = "U2.1Name",
+                    UserProfile = "U2.1Pf"
+                },
+                new UBDestination()
+                {
+                    UserId = "U2.2",
+                    UserName = "U2.2Name",
+                    UserProfile = "U2.2Pf"
+                }
+            });
+            uBJobs.Push(new List<UBDestination>() {
+                new UBDestination()
+                {
+                    UserId = "U3.1",
+                    UserName = "U3.1Name",
+                    UserProfile = "U3.1Pf"
+                }
+            });
+        }
+
+
+        public static List<UBDestination> GetDests(ProcInstContext procInstContext)
+        {
+            return uBJobs.Pop();
+        }
+
+    }
+    public class JobStack
+    { 
+        private static Stack<UBJob> uBJobs = new Stack<UBJob>();
+        static JobStack()
+        {
+            uBJobs.Push(new UBJob()
+            {
+                JobId = "J1",
+                JobName = "Job1"
+            });
+            uBJobs.Push(new UBJob()
+            {
+                JobId = "J2",
+                JobName = "Job2"
+            });
+            uBJobs.Push(new UBJob()
+            {
+                JobId = "J3",
+                JobName = "Job3"
+            });
+        }
+
+        public static UBJob CalculateJobs()
+        {
+            return uBJobs.Pop();
+        }
+    }
+
+    public class SimTOAProvider
+    {
+
+        UBJob _lastJob = null;
+        string _actId = string.Empty;
+        string ruleConfig = string.Empty;
+        ProcInstContext _procInstContext = null;
+        public SimTOAProvider(ProcInstContext procInstContext)
+        {
+            _procInstContext = procInstContext;
+            _actId = procInstContext.Scope;
+            ruleConfig = ActLineConfigProvider.Instance.Get(_actId);
+            _lastJob = (UBJob)this._procInstContext.GetValue("lastJob");
+        }
+
+        public CalResult Calculate()
+        {
+            //获取所有的TOAInstanceJobRoute
+
+            IList<TOAJobRoute> TOAJobRoutes = (IList<TOAJobRoute>)_procInstContext.GetValue("TOAJobRoute");
+            CalResult r = new CalResult()
+            {
+                TOAStatus = TOAStatus.Continue,
+                RuleConfig = this.ruleConfig,
+                LastJob = this._lastJob
+            };
+            //获取上一审批节点的Action
+            UBAction actionInfo;
+            if (_lastJob == null)
+            {
+                actionInfo = new UBAction() { 
+                    Name = "TOAStart",
+                    ActionType = ActionType.继续TOA
+                };
+            }
+            else
+            {
+                actionInfo = this._lastJob.Outcome;
+            }
+            if (actionInfo.ActionType == ActionType.结束TOA || actionInfo.ActionType == ActionType.退回重发起)
+            {
+                r.TOAStatus = TOAStatus.End;
+                TOARuntime TOARuntime = (TOARuntime)_procInstContext.GetValue("TOARuntime");
+                TOARuntime.Status = TOARuntimeStatus.End;
+                //ts.ChangeRuntimeStatus(this.procInstId, this.actName, TOARuntimeStatus.结束);
+                return r;
+            }
+            else if (actionInfo.ActionType == ActionType.继续TOA)
+            {
+                //岗位正常按照路径查找，false表示为岗位自循环。
+                bool normalNext = true;
+                if (this._lastJob != null? this._lastJob.Cycle: false)
+                {
+                    ////判断上一审批岗位是否循环岗位
+                    //CycleJobResolver cjr = new CycleJobResolver();
+                    //string ov = string.Empty;
+                    //cycleJobXml = this._ruleXml.SelectSingleNode("//Job/row[Id='" + this.lastJob.JobID + "']");
+                    //cycleDestinationJson = cycleJobXml.SelectSingleNode("DestinationJson");
+
+                    //_inputParam.JobName = this.lastJob.JobName;
+                    //_inputParam.JobRuleId = this.lastJob.JobID;
+                    ////如果选人规则的参数用到上一岗位信息时,需要在计算结束之前 将上一岗位插入到jobroute表中
+                    //ts.InsertV_JobRoute(this.procInstId, this.actName, this.lastJob.JobName, this.lastJob.JobID);
+                    //normalNext = cjr.CycleEnd(cycleDestinationJson.OuterXml, _inputParam, this, ref ov);
+                    ////将这个虚拟的路径删除掉
+                    //ts.DeleteV_JobRoute(this.procInstId);
+
+
+                    normalNext = false;
+                }
+                //循环节点且结束或者非循环节点
+                if (normalNext)
+                {
+                    List<UBJob> nextJobQueues = new List<UBJob>();
+                    var job = JobStack.CalculateJobs();
+                    if (job != null)
+                    {
+                        //记录UBI_TOA_Instance_JobRoute
+                        //UBI_TOA_NextJobQueue
+                        List<TOANextJobQueue> tOANextJobQueues = new List<TOANextJobQueue>();
+                        nextJobQueues.Add(job);
+                        r.NextJobQueue = nextJobQueues;
+                    }
+                    else
+                        Console.WriteLine(this._procInstContext.Scope + "  CalculateJobs-->岗位" + this._lastJob.JobName + "满足TO条件的目标岗位数量为0，递归结束");
+                    Console.WriteLine(this._procInstContext.Scope + "上一岗位审批结果触发 正常顺序： 上一审批岗位:" + this._lastJob?.JobName + " 的目标岗位数量为：" + nextJobQueues.Count);
+                }
+                else
+                {
+                    Console.WriteLine("CalculateJobs-->循环节点继续循环");
+                    //循环节点继续循环
+                    //ts.InsertNextCycleJob(this.procInstId, this.actName, this.lastJob.JobName, this.lastJob.JobID, cycleDestinationJson.OuterXml);
+                    //
+                    //UBI_TOA_NextJobQueue 插入记录
+                    //UBI_TOA_Instance_JobRoute
+                    //UPDATE [UBI_TOA_Runtime] SET NextJobCount = 1, LastApprJobIsCycle = 1 WHERE ProcInstId = @ProcInstId AND ActName = @ActName
+                }
+            }
+            //内部跳转逻辑
+            else if (actionInfo.ActionType == ActionType.内部跳转)
+            {
+                //this.Goto(actionInfo.ActionJob, this.lastJob.JobID);
+                Console.WriteLine("内部跳转逻辑 goto");
+            }
+            return r;
+        }
+
+
+        public DestinationResult GetDestinations(UBJob uBJob)
+        {
+            var dests = DestinationStack.GetDests(_procInstContext);
+            foreach (var d in dests)
+            {
+                d.Job = uBJob;
+            }
+
+            DestinationResult destinationResult = new DestinationResult()
+            {
+                DestinationType = DestinationType.TOA,
+                Destinations = dests,
+                Job = uBJob,
+                LastJob = _lastJob,
+                Error = ""
+            };
+
+
+            return destinationResult;
+        }
+    }
+}

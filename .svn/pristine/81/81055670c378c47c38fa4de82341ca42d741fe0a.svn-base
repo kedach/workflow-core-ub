@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Sample_TOA.Context;
+
+namespace WorkflowCore.Sample_TOA.Rules
+{
+    public class ClientEventRule : IUBEventRule
+    {
+        public void Run(ProcInstContext PIContext)
+        {
+            Console.WriteLine("ClientEventRule dest:" + PIContext.GetValue("Destination"));
+        }
+    }
+}

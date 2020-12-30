@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+
+namespace WorkflowCore.Extention.Primitives.TOA
+{
+    public class TOACalStepBody : UBStepBody
+    {
+        public override ExecutionResult Run(IStepExecutionContext context)
+        {
+            this.InitUBContext(context);
+            //TOA的入口和起始点。
+            string lastJobId = this.ProcInstContext.GetValue("lastJobId")?.ToString();
+            //根据上一岗位获取下一岗位列表
+            var nextJobList = new Dictionary<string, object>();
+            nextJobList.Add("job1", "xml");
+            nextJobList.Add("job2", "xml");
+            this.ProcInstContext.SetValue("nextJobList", nextJobList);
+
+
+            Console.WriteLine(this.Name);
+            Console.WriteLine(this.ProcInstContext.Scope);
+            //this.ProcInstContext.Scope = this.Name;
+
+            return ExecutionResult.Next();
+        }
+    }
+}

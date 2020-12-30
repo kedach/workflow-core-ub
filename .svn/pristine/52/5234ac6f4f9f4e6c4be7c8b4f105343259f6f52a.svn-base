@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Primitives;
+using WorkflowCore.Services;
+using WorkflowCore.TOA.Services;
+
+namespace WorkflowCore.Interface
+{
+    public static class TOAStepBuilderExtensions
+    {
+        public static TOAStepBuilder<TData> TOA<TData, TStepBody>(this IStepBuilder<TData, TStepBody> builder, string name,  Action<IStepBuilder<TData, TOAActivityStepBody>> stepSetup = null)
+            where TStepBody : IStepBody
+        {
+            var newStep = new TOAActivityStep();
+            builder.WorkflowBuilder.AddStep(newStep);
+            var stepBuilder = new TOAStepBuilder<TData>(builder.WorkflowBuilder, newStep);
+
+            if (stepSetup != null)
+                stepSetup.Invoke(stepBuilder);
+
+            newStep.Name = name;
+            //如果输出是TOA的结果是continue 那么继续自循环。
+            Expression<Func<object, object>> expr = x => "Continue";
+            newStep.Outcomes.Add(new ValueOutcome
+            {
+                Value = expr,
+                NextStep = newStep.Id
+            });
+
+            builder.Step.Outcomes.Add(new ValueOutcome()
+            {
+                NextStep = newStep.Id
+            });
+
+            return stepBuilder;
+        }
+    }
+}

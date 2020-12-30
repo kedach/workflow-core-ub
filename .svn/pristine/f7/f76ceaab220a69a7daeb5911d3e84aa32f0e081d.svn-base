@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Sample_TOA.Context;
+using WorkflowCore.Sample_TOA.Models;
+
+namespace WorkflowCore.Sample_TOA.Rules
+{
+    public class DestinationRule : IUBEventRule
+    {
+        public void Run(ProcInstContext PIContext)
+        {
+            UBJob job = (UBJob)PIContext.GetValue("Job");
+
+            IList<UBDestination> cdest = new List<UBDestination>();
+
+            cdest.Add(new UBDestination() { 
+                UserId = "user1",
+                UserName = "张三",
+                Job = job
+            });
+            cdest.Add(new UBDestination()
+            {
+                UserId = "user2",
+                UserName = "李四",
+                Job = job
+            });
+            PIContext.SetValue("Destinations", cdest);
+        }
+    }
+}

@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Sample_TOA.Models;
+using WorkflowCore.Sample_TOA.Models.TOA;
+using WorkflowCore.Sample_TOA.SimProvider;
+
+namespace WorkflowCore.Extention.Primitives.TOA
+{
+    public class TOACalStepBody : UBStepBody
+    {
+        public override ExecutionResult Run(IStepExecutionContext context)
+        {
+            this.InitUBContext(context);
+            //TOA的入口和起始点。
+            UBJob lastJob = (UBJob)this.ProcInstContext.GetValue("lastJob");
+            Console.WriteLine("Cal lastJobId:" + lastJob?.JobId);
+            //根据上一岗位获取下一岗位列表
+            //IList<UBJob> nextJobList = new List<UBJob>();
+            //nextJobList.Add(new UBJob() { JobId = "job1", JobName = "Job1", JobConfig="xml/json"});
+            //nextJobList.Add(new UBJob() { JobId = "job2", JobName = "Job2", JobConfig = "xml/json" });
+            //this.ProcInstContext.SetValue("nextJobList", nextJobList);
+
+            SimTOAProvider simTOAProvider = new SimTOAProvider(this.ProcInstContext);
+            CalResult calResult = simTOAProvider.Calculate();
+            List<UBJob> NextJobQueue = calResult.NextJobQueue;
+            //为岗位循环做好准备。
+            this.ProcInstContext.SetValue("NextJobQueue", NextJobQueue);
+            Console.WriteLine(this.ProcInstContext.Scope);
+            //this.ProcInstContext.Scope = this.Name;
+            if(NextJobQueue != null && NextJobQueue.Count > 0)
+                return ExecutionResult.Outcome(TOAStatus.Continue.ToString());
+            //清理上下文信息。
+            this.ProcInstContext.ClearScopeContext();
+            return ExecutionResult.Outcome(lastJob.Outcome.Id);
+        }
+    }
+}

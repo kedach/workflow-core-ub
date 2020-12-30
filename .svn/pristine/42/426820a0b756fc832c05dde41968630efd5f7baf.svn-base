@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Sample_TOA.Context;
+
+namespace WorkflowCore.Sample_TOA.Rules
+{
+    public class DestinationRule : IUBEventRule
+    {
+        public void Run(ProcInstContext PIContext)
+        {
+            string jobId = PIContext.GetValue("JobID")?.ToString();
+
+
+            object dests = PIContext.GetValue("Destinations");
+            if (dests == null)
+                dests = new List<string>();
+
+            IList<string> cdest = (List<string>)dests;
+
+            cdest.Add("dest1");
+            cdest.Add("dest2");
+            PIContext.SetValue("Destinations", cdest);
+        }
+    }
+}

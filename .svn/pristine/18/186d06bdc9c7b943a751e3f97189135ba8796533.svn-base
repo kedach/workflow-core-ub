@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Shame\expression.json" />
+    <None Remove="Shame\procconfig.json" />
+    <None Remove="Shame\stored-definition.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Shame\expression.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shame\procconfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shame\stored-definition.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\extensions\WorkflowCore.Users\WorkflowCore.Users.csproj" />
+    <ProjectReference Include="..\src\WorkflowCore\WorkflowCore.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Primitives;
+using WorkflowCore.Services;
+
+namespace WorkflowCore.TOA.Services
+{
+    public class TOAStepBuilder<TData> : StepBuilder<TData, TOAActivityStepBody>, ITOAStepBuilder<TData>
+    {
+        private readonly TOAActivityStep _wrapper;
+
+        public TOAStepBuilder(IWorkflowBuilder<TData> workflowBuilder, TOAActivityStep step) 
+            : base (workflowBuilder, step)
+        {
+            _wrapper = step;
+        }
+    }
+}

@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Primitives;
+
+namespace WorkflowCore.Extention.TOA
+{    
+    public class TOAWorkflow : IWorkflow<ProcInstContext>
+    {
+        public string Id => "TOA";
+        public int Version => 1;
+
+        public void Build(IWorkflowBuilder<ProcInstContext> builder)
+        {
+            builder.StartWith(context =>
+            {
+                Console.WriteLine("Workflow started");
+                return ExecutionResult.Next();
+            })
+            .TOA("TOA1")
+            .When("End", "结束TOA")
+            .Then<TOAActivityStepBody>();
+        }        
+    }
+
+    public class ProcInstContext
+    {
+        /// <summary>
+        /// TOA 或者普通节点输出
+        /// </summary>
+        public int OutCome { get; set; }
+    }
+}

@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.UBWF.Models;
+
+namespace WorkflowCore.Extention.TOA
+{
+    public class UBStep<TStepBody> : WorkflowStep<TStepBody>
+        where TStepBody : IStepBody
+    {
+        /// <summary>
+        /// UB引擎的上下文信息。
+        /// </summary>
+        protected ProcInstContext ProcInstContext { get; set; }
+    }
+}

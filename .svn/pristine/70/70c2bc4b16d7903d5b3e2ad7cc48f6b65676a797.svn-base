@@ -1,0 +1,51 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using WorkflowCore.Extention.Primitives.TOA;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Primitives;
+using WorkflowCore.Services;
+
+namespace WorkflowCore.Interface
+{
+    public static class UBStepBuilderExtensions
+    {
+        public static IStepBuilder<TData, TOACalStepBody> TOA<TData, TStepBody>(this IStepBuilder<TData, TStepBody> builder, string name, string id)
+            where TStepBody : IStepBody
+        {
+            //TOA cal
+            var newStep = new WorkflowStep<TOACalStepBody>();
+            builder.WorkflowBuilder.AddStep(newStep);
+            builder.Step.Outcomes.Add(new ValueOutcome() { NextStep = newStep.Id });
+            AddInputParams(newStep.Inputs, "TOACal_", id, name);
+
+            //TOA JOB foreach
+
+            var stepBuilder = new StepBuilder<TData, TOACalStepBody>(builder.WorkflowBuilder, newStep);
+
+          
+            return stepBuilder;
+        }
+
+        private static void AddInputParams(List<IStepParameter> inputs,string prefix, string TOAId, string TOAName)
+        {
+            //input表达式必须要带有输入参数。
+            string stepName = "TOACal_" + TOAName;
+            Expression<Func<object, string>> nameValueExpr = (x => stepName);
+            Expression<Func<UBStepBody, string>> nameExpr = (x => x.Name);
+            inputs.Add(new MemberMapParameter(nameValueExpr, nameExpr));
+
+            Expression<Func<object, string>> scopeValueExpr = (x => TOAName);
+            Expression<Func<UBStepBody, string>> scopeExpr = (x => x.ScopeName);
+            inputs.Add(new MemberMapParameter(nameValueExpr, nameExpr));
+
+            Expression<Func<object, string>> IdValueExpr = (x => TOAId);
+            Expression<Func<UBStepBody, string>> IdExpr = (x => x.ScopeID);
+            inputs.Add(new MemberMapParameter(IdValueExpr, IdExpr));
+        }
+    }
+}

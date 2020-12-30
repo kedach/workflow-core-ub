@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+
+namespace WorkflowCore.Extention.TOA
+{
+    public abstract  class UBStepBody : StepBody
+    {
+        ProcInstContext _procInstContext { get; set; }
+        public UBStepBody(ProcInstContext procInstContext)
+        {
+            _procInstContext = procInstContext;
+        }
+
+        public void SetScope(string scope)
+        {
+            _procInstContext.Scope = scope;
+        }
+
+        public object GetContextItem(string key)
+        {
+            return _procInstContext.GetValue(key);
+        }
+        public void SetContextItem(string key, object value)
+        {
+            _procInstContext.SetValue(key, value);
+        }
+        public ProcInstContext GetContext()
+        {
+            return _procInstContext;
+        }
+        /// <summary>
+        /// UB引擎的上下文信息。
+        /// </summary>
+    }
+}

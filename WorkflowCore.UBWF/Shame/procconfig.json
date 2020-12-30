@@ -1,0 +1,449 @@
+﻿{
+  "Cfg": {
+    "Id": "79efc1b68b9d451c8a8969685fe80818", //流程ID
+    "Name": "出差申请", //流程名称
+    "Schema": "2.0",
+    "Version": "201204108", //流程版本
+    "FileVersionID": "201204108", //文件版本号，用于判断多人修改
+    "FormCode" "",
+    "a6449a0cb904430b83e39baf490c088c", //表单
+    "FormVersion": "",
+    "FormName": "出差申请", //表单名称
+    "ProcType": "9ae92bb68562491689d50f9dfcbdc6ef", //流程分类
+    "ProcTypeName": "财务类", //流程分类
+    "Engine": "UBI", //引擎
+    "IsEnableLine": true, //是否启用网格线
+    "Children": [
+      {
+        "Type": "StartActivity", //节点类型，开始节点
+        "Id": "Start", //节点Id
+        "Name": "开始节点" //节点名称
+      },
+      {
+        "Type": "RoundedConnector", //圆角连接线
+        "Id": "86b95ba541ed44b8a59b1945d8499d5d", //线Id
+        "Name": "DefaultLine", //线名称
+        "Source": "Start", //线的源端口
+        "Target": "86b95ba541ed44b8a59b1945d8499d5d", //线的目标端口
+        "ConditionRules": [
+          { //线规则
+            "Id": "",
+            "EType": "Condition",
+            "Rule": {
+              "Id": "be8a576c4e6e49118dba4c7de502ba39",
+              "EType": "LO",
+              "Name": "",
+              "Display": "",
+              "Desc": "",
+              "Data": {
+                "key": "ef2585be96e448c3ab6df7fbec911152",
+                "parentId": "",
+                "conditionType": "group",
+                "isOperator": false,
+                "booloperator": "",
+                "operator": "",
+                "children": [
+                  {
+                    "key": "472fcc1112724802af6cad6df1e07f54",
+                    "parentId": "ef2585be96e448c3ab6df7fbec911152",
+                    "conditionType": "condition",
+                    "isOperator": false,
+                    "booloperator": "",
+                    "operator": "==",
+                    "returnType": "Int",
+                    "variable1": {
+                      "Data": {
+                        "EType": "C",
+                        "Desc": "",
+                        "Data": "123",
+                        "Display": "",
+                        "ReturnType": "String",
+                        "Name": "",
+                        "Type": "String"
+                      },
+                      "DataValue": "123"
+                    },
+                    "variable2": {
+                      "Data": {
+                        "EType": "C",
+                        "Desc": "1",
+                        "Data": "1",
+                        "Display": "1",
+                        "Name": "手工输入",
+                        "ReturnType": "String",
+                        "Selected": "ManualInput",
+                        "Type": "String"
+                      },
+                      "DataValue": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "CustomCode": { //线规则自定义代码
+          "Id": "",
+          "EType": "CustomConfig",
+          "Rules": [
+            {
+              "CustomCode": "",
+              "ServiceId": "ab2d3cd066d6438c9b3faeefafaa98cc",
+              "Integrates": [
+                {
+                  "IntegrateTypeCode": "Service",
+                  "IntegrateTypeName": "服务",
+                  "IntegrateId": "ab2d3cd066d6438c9b3faeefafaa98cc",
+                  "IntegrateVersion": "201223002",
+                  "IntegrateName": "待处理任务",
+                  "IntegrateDesc": "待处理任务_201223002",
+                  "Introduction": "待处理任务",
+                  "ActionName": "同意",
+                  "ActionKey": "Agree",
+                  "ParamData": [
+                    {
+                      "ParamName": "filter",
+                      "ParamValue": "发起人(Process)",
+                      "ParamValueCode": "Originator",
+                      "Desc": "",
+                      "oData": {
+                        "EType": "C",
+                        "Type": "Process",
+                        "UseType": "value",
+                        "Name": "发起人",
+                        "Desc": "发起人",
+                        "Data": "Originator",
+                        "Selected": "Originator",
+                        "rowIndex": "2",
+                        "ReturnType": "String",
+                        "Display": "发起人"
+                      }
+                    }
+                  ],
+                  "IntegrateError": "异常方法描述",
+                  "ErrorCodeId": "",
+                  "ErrorServiceId": "",
+                  "ErrorConfig": [
+                    {
+                      //同ParamData
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "Type": "TOAActivity", //TOA节点
+        "Id": "86b95ba541ed44b8a59b1945d8499d5d", //节点ID
+        "Name": "TOA节点", //节点名称
+        "SpecialRule": {
+          "EType": "SpecialRule", //特殊规则，跳过重复审批等
+          "Rule": [
+            {
+              "JobId": "",
+              "JobName": "",
+              "NeedAutoApprove": false,
+              "AutoApprHis": true,
+              "SkipRule": false,
+              "SkipApprHis": false,
+              "SkipInitiator": false,
+              "SkipInitiatorHis": false,
+              "ExcludeHoliday": false,
+              "NoTask": false,
+              "AutoActionKey": "AGREE",
+              "DestinationAnalysis": false,
+              "ClientAnalysis": false,
+              "EventAnalysis": false,
+              "SuccedingruleAnalysis": false
+            }
+          ]
+        },
+        "BizRules": { //审批规则
+          "EType": "EmpRules",
+          "IsTOA": true,
+          "Rules": [
+            {
+              "Job": [
+                {
+                  "EType": "SP",
+                  "First": true,
+                  "Id": "d470da2db44e454486648521951e7952",
+                  "JobName": "部门负责人审批",
+                  "URLStep": "approval",
+                  "URLStepName": "6.审批视图",
+                  "VirtualJobID": "",
+                  "VirtualJobName": "VirtualJobName",
+                  "Destination": "根据申请人部门级别找负责人(SP)",
+                  "DestinationJson": {
+                    "dbCode": "",
+                    "dbName": "",
+                    "dbType": "",
+                    "Desc": "根据申请人部门级别找负责人",
+                    "Display": "根据申请人部门级别找负责人",
+                    "EType": "SP",
+                    "funName_CN": "根据申请人部门级别找负责人",
+                    "funName_EN": "GJSQRBMJBZFZR",
+                    "funResCode": "110d61be7cb348d0be2f3ebc8982e8e9",
+                    "version": "20071701",
+                    "Name": "根据申请人部门级别找负责人(SP)",
+                    "output": "UserID,Emp_Id,Emp_Name,lv",
+                    "Params": {
+                      "output": "UserID,Emp_Id,Emp_Name,lv",
+                      "Param": [
+                        {
+                          "ParamName": "",
+                          "ParamName_CN": "",
+                          "ParamName_EN": "",
+                          "ParamValue": "",
+                          "ParamValueJson": ""
+                        }
+                      ]
+                    },
+                    "proc": "USP_HS20200717115406_20071701",
+                    "procName": "",
+                    "ReturnType": "DataTable",
+                    "returnValueType": "6"
+                  }
+
+                }
+              ],
+              "Condition": { //TOA条件以及审批矩阵
+                "ApprPath": [
+                  {
+                    "conditionName": "恒等式",
+                    "conditionId": "be8a576c4e6e49118dba4c7de502ba39",
+                    "Job_d470da2db44e454486648521951e7952": true,
+                    "Job_d470da2db44e454486648521951e7952_conditionName": "",
+                    "Job_d470da2db44e454486648521951e7952_conditionId": ""
+                  }
+                ],
+                "metaData": {
+
+                },
+                "conditionData": [
+                  {
+                    "Id": "be8a576c4e6e49118dba4c7de502ba39",
+                    "EType": "LO",
+                    "Name": "",
+                    "Display": "",
+                    "Desc": "",
+                    "Data": {
+                      "key": "ef2585be96e448c3ab6df7fbec911152",
+                      "parentId": "",
+                      "conditionType": "group",
+                      "isOperator": false,
+                      "booloperator": "",
+                      "operator": "",
+                      "children": [
+                        {
+                          "key": "472fcc1112724802af6cad6df1e07f54",
+                          "parentId": "ef2585be96e448c3ab6df7fbec911152",
+                          "conditionType": "condition",
+                          "isOperator": false,
+                          "booloperator": "",
+                          "operator": "==",
+                          "returnType": "Int",
+                          "variable1": {
+                            "Data": {
+                              "EType": "C",
+                              "Desc": "",
+                              "Data": "123",
+                              "Display": "",
+                              "ReturnType": "String",
+                              "Name": "",
+                              "Type": "String"
+                            },
+                            "DataValue": "123"
+                          },
+                          "variable2": {
+                            "Data": {
+                              "EType": "C",
+                              "Desc": "1",
+                              "Data": "1",
+                              "Display": "1",
+                              "Name": "手工输入",
+                              "ReturnType": "String",
+                              "Selected": "ManualInput",
+                              "Type": "String"
+                            },
+                            "DataValue": "1"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "Actions": { //节点action
+          "EType": "Actions",
+          "Rules": [
+            {
+              "JobId": "",
+              "JobName": "",
+              "Actions" ";",
+              []
+            }
+          ]
+        },
+        "Notification": { //节点邮件配置
+          "EType": "Notification",
+          "Rules": [
+            {
+              "Id": "",
+              "Method": "Mail",
+              "Type": "Task",
+              "ActionKey": "-",
+              "ActionName": "-",
+              "TemplateType": "接口服务失败提醒邮件",
+              "TemplateId": "b20eb481fc7147139744abdc840636fe",
+              "Condition": "-",
+              "EType": "",
+              "Rule": {
+                "Name": "",
+                "Data": "",
+                "EType": ""
+              },
+              "Remark": "",
+              "CJobName": "",
+              "CJobId": "CJobId"
+            }
+          ]
+        },
+        "CustomCode": { //节点自定义代码配置
+          "Id": "",
+          "EType": "CustomConfig",
+          "Rules": [
+            {
+              "JobId": "",
+              "JobName": "",
+              "DestinationCode": {
+                "CustomCode": "",
+                "ServiceId": "ab2d3cd066d6438c9b3faeefafaa98cc",
+                "Integrates": [
+                  {
+                    "IntegrateTypeCode": "Service",
+                    "IntegrateTypeName": "服务",
+                    "IntegrateId": "ab2d3cd066d6438c9b3faeefafaa98cc",
+                    "IntegrateVersion": "201223002",
+                    "IntegrateName": "待处理任务",
+                    "IntegrateDesc": "待处理任务_201223002",
+                    "Introduction": "待处理任务",
+                    "ActionName": "",
+                    "ActionKey": "",
+                    "ParamData": [
+                      {
+                        "ParamName": "filter",
+                        "ParamValue": "发起人(Process)",
+                        "ParamValueCode": "Originator",
+                        "Desc": "",
+                        "oData": {
+                          "EType": "C",
+                          "Type": "Process",
+                          "UseType": "value",
+                          "Name": "发起人",
+                          "Desc": "发起人",
+                          "Data": "Originator",
+                          "Selected": "Originator",
+                          "rowIndex": "2",
+                          "ReturnType": "String",
+                          "Display": "发起人"
+                        }
+                      }
+                    ],
+                    "IntegrateError": "异常方法描述",
+                    "ErrorCodeId": "",
+                    "ErrorServiceId": "",
+                    "ErrorConfig": [
+                      {
+                        //同ParamData
+                      }
+                    ]
+                  }
+                ]
+              },
+              "ClientEventCode": {
+
+              },
+              "EventSucceedingCode": {
+
+              },
+              "SucceedingCode": {
+
+              },
+              "ServerEventCode": {
+
+              }
+            }
+          ]
+        },
+        "ActivitiesDatafields": [
+          { //节点变量
+            "Guid": "",
+            "Name": "BusinessData",
+            "Type": "DataField",
+            "Scope": "Destination",
+            "ReturnType": "String",
+            "Value": "",
+            "KeepLog": "",
+            "Shared": "",
+            "Description": ""
+          }
+        ]
+      }
+    ],
+    "ProcessProperty": { //流程属性配置
+      "EType": "ProcessProperty",
+      "CallBack": true,
+      "ReadAddHistory": false,
+      "CallBackAddHistory": false,
+      "AbortAddHistory": false,
+      "ArbitraryWithdrawal": false,
+      "IntegrateMail": "" //接口异常运维人员邮箱
+    },
+    "ProcessNotification": { //流程完成、作废邮件配置
+      "EType": "ProcessNotification",
+      "Rules": [
+        {
+          "Id": "",
+          "Method": "Mail",
+          "Type": "Completed",
+          "TemplateType": "接口服务失败提醒邮件",
+          "TemplateId": "b20eb481fc7147139744abdc840636fe",
+          "Condition": "-",
+          "EType": "C",
+          "Rule": {
+            "type": "Process",
+            "UseType": "value",
+            "EType": "C",
+            "Name": "发起人",
+            "Desc": "发起人",
+            "Data": "Originator",
+            "Selected": "Originator",
+            "ReturnType": "String",
+            "display": "发起人(Process)"
+          },
+          "Remark": "发起人"
+        }
+      ]
+    },
+    "ProcessDatafields": [
+      { //流程变量
+        "Guid": "",
+        "Name": "BusinessData",
+        "Type": "DataField",
+        "Scope": "Process",
+        "ReturnType": "String",
+        "Value": "",
+        "KeepLog": "",
+        "Shared": "",
+        "Description": ""
+      }
+    ]
+  }
+}
+  

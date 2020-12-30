@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml;
+using WorkflowCore.Sample_TOA.Models;
+using WorkflowCore.Sample_TOA.Models.TOA;
+
+namespace WorkflowCore.Sample_TOA.SimProvider
+{
+    public struct CalResult
+    {
+        /// <summary>
+        /// 整个TOA的状态
+        /// </summary>
+        public TOAStatus TOAStatus;
+
+        /// <summary>
+        /// 上一审批岗位是否循环岗位
+        /// </summary>
+        public UBJob LastJob;
+        /// <summary>
+        /// TOA选人规则XML  Root\Rules\Rule[EType='TOA']
+        /// </summary>
+        public string RuleConfig;
+
+        public List<UBJob> NextJobQueue { get; set; }
+    }
+}

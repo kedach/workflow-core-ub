@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Sample_TOA.Context;
+
+namespace WorkflowCore.Sample_TOA.Rules
+{
+    public class ServerEventRule : IUBEventRule
+    {
+        public void Run(UBContext uBContext)
+        {
+            Console.WriteLine("ServerEventRule");
+        }
+    }
+}

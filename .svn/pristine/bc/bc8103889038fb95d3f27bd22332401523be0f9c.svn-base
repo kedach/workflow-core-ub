@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Exceptions;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+
+namespace WorkflowCore.Extention.Primitives.TOA
+{
+    public class WhileDestsStepBody : UBStepBody
+    {
+        public override ExecutionResult Run(IStepExecutionContext context)
+        {
+            if (context.PersistenceData == null)
+            {
+                object odest = this.GetContextItem("Destinations");
+                //审批人列表存储到持久化数据中。
+                if (context.ExecutionPointer.PersistenceData == null)
+                    context.ExecutionPointer.PersistenceData = odest;
+                IList<string> dests = (IList<string>)odest;
+                if (dests.Count > 0)
+                {
+                    string dest = dests[0];
+                    dests.RemoveAt(0);
+                    this.SetContextItem("Destinations", dests);
+
+                    //return ExecutionResult.Branch(new List<object>() { context.Item }, new ControlPersistenceData() { ChildrenActive = true });
+                    return ExecutionResult.Branch(new List<object>() { dests[0] }, new ControlPersistenceData() { ChildrenActive = true });
+                }
+
+                return ExecutionResult.Next();
+            }
+
+            if ((context.PersistenceData is ControlPersistenceData) && ((context.PersistenceData as ControlPersistenceData).ChildrenActive))
+            {
+                if (!context.Workflow.IsBranchComplete(context.ExecutionPointer.Id))
+                    return ExecutionResult.Persist(context.PersistenceData);
+
+                return ExecutionResult.Persist(null);  //re-evaluate condition on next pass
+            }
+
+            throw new CorruptPersistenceDataException();
+        }
+    }
+}

@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+
+namespace WorkflowCore.Extention.TOA
+{    
+    public class TOAActivity : IWorkflow<ProcInstData>
+    {
+        public string Id => "TOA";
+        public int Version => 1;
+
+        public void Build(IWorkflowBuilder<ProcInstData> builder)
+        {
+            builder.StartWith(context =>{
+                Console.WriteLine("Workflow started");
+                return ExecutionResult.Next();
+            })
+            .Then<Calculate>()
+            .While(data => data.Counter < 3)
+                .Do(x => x
+                    .StartWith<TOATask>()
+                );
+        }        
+    }
+
+    public class ProcInstData
+    {
+        public int Counter { get; set; }
+    }
+}

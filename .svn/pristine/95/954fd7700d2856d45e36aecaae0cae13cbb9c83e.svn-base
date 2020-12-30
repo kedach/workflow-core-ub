@@ -1,0 +1,44 @@
+﻿{
+  "Id": "ef2585be96e448c3ab6df7fbec911152",
+  "Name": "分支计算",
+  "Version": "001",
+  "DataType": "UBPlatform.Defination.Expression, UBPlatform",
+  "ReturnValueType": "System.Boolean",
+  "Data": [
+    {
+      "Id": "00000111",
+      "Name": "金额大于100",
+      "Version": "001",
+      "DataType": "UBPlatform.Defination.ExpressionItem, UBPlatform",
+      "ReturnValueType": "System.Boolean",
+      "Data": [
+        {
+          "Value": "Amount",
+          "DataType": "UBPlatform.Defination.SmartDS, UBPlatform",
+          "ReturnValueType": "System.Int"
+        },
+        {
+          "Value": "And",
+          "DataType": "UBPlatform.Defination.Operation, UBPlatform"
+        },
+        {
+          "Value": "100",
+          "DataType": "UBPlatform.Defination.Constant, UBPlatform",
+          "ReturnValueType": "System.Int"
+        }
+      ]
+    },
+    {
+      "Value": "And",
+      "DataType": "UBPlatform.Defination.Operation, UBPlatform"
+    },
+    {
+      "Id": "fx0001",
+      "Name": "申请部门是财务部",
+      "Version": "001",
+      "DataType": "UBPlatform.Defination.FxDef, UBPlatform",
+      "ReturnValueType": "System.Boolean"
+    }
+  ]
+
+}

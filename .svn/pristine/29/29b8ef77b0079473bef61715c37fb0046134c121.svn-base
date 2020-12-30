@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WorkflowCore.Extention.TOA;
+using WorkflowCore.Sample_TOA.Context;
+using WorkflowCore.Sample_TOA.Models;
+
+namespace WorkflowCore.Sample_TOA.Rules
+{
+    public class SucceedingRule : IUBEventRule
+    {
+        public void Run(ProcInstContext PIContext)
+        {
+            Console.WriteLine("SucceedingRule");
+        }
+    }
+}

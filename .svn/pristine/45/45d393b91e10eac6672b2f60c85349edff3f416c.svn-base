@@ -1,0 +1,68 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using WorkflowCore.Interface;
+using WorkflowCore.Models;
+using WorkflowCore.Sample_TOA.Models;
+using WorkflowCore.Sample_TOA.Models.Enum;
+using WorkflowCore.Sample_TOA.Models.TOA;
+
+namespace WorkflowCore.Extention.TOA
+{
+    public abstract  class UBStepBody : StepBody
+    {
+        protected UBAct uBAct = new UBAct();
+        protected void InitUBContext(IStepExecutionContext context)
+        {
+            uBAct.Name = this.ActName;
+            uBAct.Id = this.ActID;
+            uBAct.StageName = this.StageName;
+            uBAct.ActType = (ActType)Enum.Parse(typeof(ActType), this.SActType);
+
+            this.ProcInstContext = (ProcInstContext)context.Workflow.Data;
+            if (string.IsNullOrEmpty(this.ProcInstContext.ProcInstId))
+                this.ProcInstContext.ProcInstId = context.Workflow.Id;
+            //切换作用域赋值，以下所有的取值赋值都在此作用域内发生。
+            this.ProcInstContext.Scope = uBAct.Name;
+            //scope的初始化
+            if (!this.ProcInstContext.ExistScope(uBAct.Name))
+            {
+                if (uBAct.ActType == ActType.TOA)
+                {
+                    this.SetContextItem("TOACycleHis", new List<TOACycleHis>());
+                    this.SetContextItem("TOACycleVariable", new List<TOACycleVariable>());
+                    this.SetContextItem("TOACycleVariableHis", new List<TOACycleVariableHis>());
+                    this.SetContextItem("TOAJobRoute", new List<TOAJobRoute>());
+                    this.SetContextItem("TOANextJobQueue", new List<TOANextJobQueue>());
+                    this.SetContextItem("TOANextJobQueueError", new List<TOANextJobQueueError>());
+                    this.SetContextItem("TOARuntime", new TOARuntime());
+                }
+            }
+        }
+
+        public string StageName { get; set; } = "TOA各阶段名称";
+        public string ActID { get; set; } = "TOAID";
+        public string ActName { get; set; } = "TOA名称";
+        public string SActType { get; set; } = "类型";
+        /// <summary>
+        /// UB引擎的上下文信息。
+        /// </summary>
+        public ProcInstContext ProcInstContext { get; set; }
+
+
+        public object GetContextItem(string key)
+        {
+            return ProcInstContext.GetValue(key);
+        }
+        public void SetContextItem(string key, object value)
+        {
+            ProcInstContext.SetValue(key, value);
+        }
+        public ProcInstContext GetContext()
+        {
+            return ProcInstContext;
+        }
+
+    }
+}

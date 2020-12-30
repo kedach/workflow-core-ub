@@ -1,0 +1,22 @@
+﻿using System;
+
+namespace WorkflowCore.Sample_TOA
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //表 UBI_TOA_Runtime
+            //TOA逻辑: 
+            //TOA计算  
+            //      ActionTypeEnum.结束TOA || ActionTypeEnum.退回重发起   return: TOAStatus.End
+            //      ActionTypeEnum.继续TOA(默认值) 下一审批岗位>0 （计算过程中找到的岗位插入到UBI_TOA_NextJobQueue）        return: TOAStatus.Continue  
+            //                                     下一审批岗位=0         return: TOAStatus.End    TOA节点没有审批岗位  LastJobArrpOutcome='NoJob'
+            //TOA分配: 更新UBI_TOA_Runtime的字段 NextAllocatedJobCount ++;
+            //         根据 NextJobCount和NextAllocatedJobCount确定是否需要循环。
+            //TOA      从UBI_TOA_NextJobQueue提取岗位 获取岗位
+
+            Console.WriteLine("Hello World!");
+        }
+    }
+}
